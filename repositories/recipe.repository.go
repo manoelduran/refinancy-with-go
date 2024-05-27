@@ -6,13 +6,9 @@ import (
 )
 
 // RecipeRepository is a struct that contains the database
-
 type RecipeRepository struct {
-
-	db *gorm.DB
-
+    db *gorm.DB
 }
-
 // NewRecipeRepository is a function that returns a new instance of RecipeRepository
 
 func NewRecipeRepository(db *gorm.DB) *RecipeRepository {
@@ -37,7 +33,7 @@ func (r *RecipeRepository) GetRecipes() ([]models.Recipe, error) {
 // GetRecipe is a function that returns a recipe by id
 
 func (r *RecipeRepository) GetRecipe(id uint) (models.Recipe, error) {
-	
+
 	var recipe models.Recipe
 	result := r.db.First(&recipe, id)
 	if result.Error != nil {

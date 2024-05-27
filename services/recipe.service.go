@@ -24,15 +24,15 @@ func NewRecipeService(repository repositories.RecipeRepository) *RecipeService {
 // GetRecipes is a function that returns all recipes
 
 func (r *RecipeService) GetRecipes() ([]models.Recipe, error) {
-	
+
 	return r.repository.GetRecipes()
 
-}	
+}
 
 // GetRecipe is a function that returns a recipe by id
 
 func (r *RecipeService) GetRecipe(id uint) (models.Recipe, error) {
-	
+
 	return r.repository.GetRecipe(id)
 
 }
