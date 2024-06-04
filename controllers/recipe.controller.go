@@ -7,19 +7,21 @@ import (
 	"github.com/manoelduran/refinancy-with-go/models"
 	"github.com/manoelduran/refinancy-with-go/services"
 )
-
-// RecipeController is a struct that contains the service
+type RecipeInterface interface {
+	GetRecipes(c *fiber.Ctx) error
+	GetRecipe(c *fiber.Ctx) error
+	CreateRecipe(c *fiber.Ctx) error
+	UpdateRecipe(c *fiber.Ctx) error
+	DeleteRecipe(c *fiber.Ctx) error
+}
 type RecipeController struct {
-	service services.RecipeService
+	service *services.RecipeService
 }
 
-// NewRecipeController is a function that returns a new instance of RecipeController
 
-func NewRecipeController(service services.RecipeService) *RecipeController {
+func NewRecipeController(service *services.RecipeService) *RecipeController {
 	return &RecipeController{service}
 }
-
-// GetRecipes is a function that returns all recipes
 
 func (r *RecipeController) GetRecipes(c *fiber.Ctx) error {
 
@@ -31,7 +33,6 @@ func (r *RecipeController) GetRecipes(c *fiber.Ctx) error {
 	return c.JSON(recipes)
 }
 
-// GetRecipe is a function that returns a recipe by id
 
 func (r *RecipeController) GetRecipe(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
@@ -46,8 +47,6 @@ func (r *RecipeController) GetRecipe(c *fiber.Ctx) error {
 	return c.JSON(recipe)
 }
 
-// CreateRecipe is a function that creates a new recipe
-
 func (r *RecipeController) CreateRecipe(c *fiber.Ctx) error {
 	recipe := new(models.Recipe)
 	if err := c.BodyParser(recipe); err != nil {
@@ -61,8 +60,6 @@ func (r *RecipeController) CreateRecipe(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusCreated).JSON(createdRecipe)
 }
-
-// UpdateRecipe is a function that updates a recipe
 
 func (r *RecipeController) UpdateRecipe(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
@@ -82,8 +79,6 @@ func (r *RecipeController) UpdateRecipe(c *fiber.Ctx) error {
 
 	return c.JSON(updatedRecipe)
 }
-
-// DeleteRecipe is a function that deletes a recipe
 
 func (r *RecipeController) DeleteRecipe(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
