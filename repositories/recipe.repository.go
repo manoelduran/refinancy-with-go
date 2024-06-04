@@ -4,20 +4,15 @@ import (
 	"github.com/manoelduran/refinancy-with-go/models"
 	"gorm.io/gorm"
 )
-
-// RecipeRepository is a struct that contains the database
 type RecipeRepository struct {
     db *gorm.DB
 }
-// NewRecipeRepository is a function that returns a new instance of RecipeRepository
 
 func NewRecipeRepository(db *gorm.DB) *RecipeRepository {
 
 	return &RecipeRepository{db}
 
 }
-
-// GetRecipes is a function that returns all recipes
 
 func (r *RecipeRepository) GetRecipes() ([]models.Recipe, error) {
 
@@ -30,8 +25,6 @@ func (r *RecipeRepository) GetRecipes() ([]models.Recipe, error) {
 
 }
 
-// GetRecipe is a function that returns a recipe by id
-
 func (r *RecipeRepository) GetRecipe(id uint) (models.Recipe, error) {
 
 	var recipe models.Recipe
@@ -43,8 +36,6 @@ func (r *RecipeRepository) GetRecipe(id uint) (models.Recipe, error) {
 
 }
 
-// CreateRecipe is a function that creates a new recipe
-
 func (r *RecipeRepository) CreateRecipe(recipe models.Recipe) (models.Recipe, error) {
 
 	result := r.db.Create(&recipe)
@@ -55,8 +46,6 @@ func (r *RecipeRepository) CreateRecipe(recipe models.Recipe) (models.Recipe, er
 
 }
 
-// UpdateRecipe is a function that updates a recipe
-
 func (r *RecipeRepository) UpdateRecipe(id uint, recipe models.Recipe) (models.Recipe, error) {
 
 	result := r.db.Model(&models.Recipe{}).Where("id = ?", id).Updates(recipe)
@@ -66,9 +55,6 @@ func (r *RecipeRepository) UpdateRecipe(id uint, recipe models.Recipe) (models.R
 	return recipe, nil
 
 }
-
-// DeleteRecipe is a function that deletes a recipe
-
 func (r *RecipeRepository) DeleteRecipe(id uint) error {
 
 	result := r.db.Delete(&models.Recipe{}, id)
