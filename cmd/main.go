@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/manoelduran/refinancy-with-go/controllers"
@@ -23,12 +24,12 @@ func main() {
                 code = e.Code
             }
 
-            // Defina o Content-Type como text/plain; charset=utf-8
             ctx.Set(fiber.HeaderContentType, fiber.MIMETextPlainCharsetUTF8)
 
             return ctx.Status(code).SendString(err.Error())
         },
     })
+    validator := validator.New()
     app.Use(recover.New())
 
     database.InitDatabase()
@@ -37,8 +38,7 @@ func main() {
     recipeRepository := repositories.NewRecipeRepository(database.DB)
     recipeService := services.NewRecipeService(recipeRepository)
     recipeController := controllers.NewRecipeController(recipeService)
-
-    routes.RecipeRoutes(app, recipeController)
+    routes.RecipeRoutes(app, recipeController, validator)
 
     log.Fatal(app.Listen(":3000"))
 }
