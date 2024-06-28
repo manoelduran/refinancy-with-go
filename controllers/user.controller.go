@@ -19,74 +19,74 @@ type UserController struct {
 }
 
 
-func NewUserController(service *services.UserService) *RecipeController {
-	return &RecipeController{service}
+func NewUserController(service *services.UserService) *UserController {
+	return &UserController{service}
 }
 
-func (r *RecipeController) GetRecipes(c *fiber.Ctx) error {
+func (u *UserController) GetUsers(c *fiber.Ctx) error {
 
-	recipes, err := r.service.GetRecipes()
+	users, err := u.service.GetUsers()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
 
-	return c.JSON(recipes)
+	return c.JSON(users)
 }
 
 
-func (r *RecipeController) GetRecipe(c *fiber.Ctx) error {
+func (u *UserController) GetUser(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
         return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid ID"})
     }
-	recipe, err := r.service.GetRecipe(uint(id))
+	user, err := u.service.GetUser(uint(id))
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
 	}
 
-	return c.JSON(recipe)
+	return c.JSON(user)
 }
 
-func (r *RecipeController) CreateRecipe(c *fiber.Ctx) error {
-	recipe := new(models.Recipe)
-	if err := c.BodyParser(recipe); err != nil {
+func (u *UserController) CreateUser(c *fiber.Ctx) error {
+	user := new(models.User)
+	if err := c.BodyParser(user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
 	}
 
-	createdRecipe, err := r.service.CreateRecipe(*recipe)
+	createdUser, err := u.service.CreateUser(*user)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(createdRecipe)
+	return c.Status(fiber.StatusCreated).JSON(createdUser)
 }
 
-func (r *RecipeController) UpdateRecipe(c *fiber.Ctx) error {
+func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
     if err != nil {
         return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid ID"})
     }
 
-	recipe := new(models.Recipe)
-	if err := c.BodyParser(recipe); err != nil {
+	user := new(models.User)
+	if err := c.BodyParser(user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
 	}
 
-	updatedRecipe, err := r.service.UpdateRecipe(uint(id), *recipe)
+	updatedUser, err := u.service.UpdateUser(uint(id), *user)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
 
-	return c.JSON(updatedRecipe)
+	return c.JSON(updatedUser)
 }
 
-func (r *RecipeController) DeleteRecipe(c *fiber.Ctx) error {
+func (u *UserController) DeleteUser(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
     if err != nil {
         return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid ID"})
     }
 
-	if err := r.service.DeleteRecipe(uint(id)); err != nil {
+	if err := u.service.DeleteUser(uint(id)); err != nil {
         return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
     }
 
