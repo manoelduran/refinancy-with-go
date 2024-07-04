@@ -6,44 +6,42 @@ import (
 )
 
 type RecipeService struct {
-
-	repository *repositories.RecipeRepository
-
+    *GenericService[models.Recipe]
 }
 
 func NewRecipeService(repository *repositories.RecipeRepository) *RecipeService {
-
-	return &RecipeService{repository}
-
+    return &RecipeService{
+        GenericService: NewGenericService(repository),
+    }
 }
 
 func (r *RecipeService) GetRecipes() ([]models.Recipe, error) {
 
-	return r.repository.GetRecipes()
+	return r.repository.GetAll()
 
 }
 
 func (r *RecipeService) GetRecipe(id uint) (models.Recipe, error) {
 
-	return r.repository.GetRecipe(id)
+	return r.repository.GetByID(id)
 
 }
 
 func (r *RecipeService) CreateRecipe(recipe models.Recipe) (models.Recipe, error) {
 
-	return r.repository.CreateRecipe(recipe)
+	return r.repository.Create(recipe)
 
 }
 
 
 func (r *RecipeService) UpdateRecipe(id uint, recipe models.Recipe) (models.Recipe, error) {
 
-	return r.repository.UpdateRecipe(id, recipe)
+	return r.repository.Update(id, recipe)
 
 }
 
 func (r *RecipeService) DeleteRecipe(id uint) error {
 
-	return r.repository.DeleteRecipe(id)
+	return r.repository.Delete(id)
 
 }
