@@ -52,7 +52,6 @@ func (r *RecipeController) CreateRecipe(c *fiber.Ctx) error {
 	if err := c.BodyParser(recipe); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
 	}
-
 	createdRecipe, err := r.service.CreateRecipe(*recipe)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
