@@ -15,17 +15,20 @@ type UserInterface interface {
 	DeleteUser(c *fiber.Ctx) error
 }
 type UserController struct {
-	service *services.UserService
+	*GenericController[models.User]
+
 }
 
 
 func NewUserController(service *services.UserService) *UserController {
-	return &UserController{service}
+	return &UserController{
+        GenericController: NewGenericController(service),
+    }
 }
 
 func (u *UserController) GetUsers(c *fiber.Ctx) error {
 
-	users, err := u.service.GetUsers()
+	users, err := u.service.GetAll()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
@@ -39,7 +42,7 @@ func (u *UserController) GetUser(c *fiber.Ctx) error {
 	if err != nil {
         return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid ID"})
     }
-	user, err := u.service.GetUser(uint(id))
+	user, err := u.service.GetByID(uint(id))
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
 	}
@@ -53,7 +56,7 @@ func (u *UserController) CreateUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
 	}
 
-	createdUser, err := u.service.CreateUser(*user)
+	createdUser, err := u.service.Create(*user)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
@@ -72,7 +75,7 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
 	}
 
-	updatedUser, err := u.service.UpdateUser(uint(id), *user)
+	updatedUser, err := u.service.Update(uint(id), *user)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
@@ -86,7 +89,7 @@ func (u *UserController) DeleteUser(c *fiber.Ctx) error {
         return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid ID"})
     }
 
-	if err := u.service.DeleteUser(uint(id)); err != nil {
+	if err := u.service.Delete(uint(id)); err != nil {
         return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
     }
 

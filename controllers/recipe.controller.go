@@ -15,17 +15,19 @@ type RecipeInterface interface {
 	DeleteRecipe(c *fiber.Ctx) error
 }
 type RecipeController struct {
-	service *services.RecipeService
+	*GenericController[models.Recipe]
 }
 
 
 func NewRecipeController(service *services.RecipeService) *RecipeController {
-	return &RecipeController{service}
+	return &RecipeController{
+        GenericController: NewGenericController(service),
+    }
 }
 
 func (r *RecipeController) GetRecipes(c *fiber.Ctx) error {
 
-	recipes, err := r.service.GetRecipes()
+	recipes, err := r.service.GetAll()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
@@ -39,7 +41,7 @@ func (r *RecipeController) GetRecipe(c *fiber.Ctx) error {
 	if err != nil {
         return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid ID"})
     }
-	recipe, err := r.service.GetRecipe(uint(id))
+	recipe, err := r.service.GetByID(uint(id))
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
 	}
@@ -52,7 +54,7 @@ func (r *RecipeController) CreateRecipe(c *fiber.Ctx) error {
 	if err := c.BodyParser(recipe); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
 	}
-	createdRecipe, err := r.service.CreateRecipe(*recipe)
+	createdRecipe, err := r.service.Create(*recipe)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
@@ -71,7 +73,7 @@ func (r *RecipeController) UpdateRecipe(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
 	}
 
-	updatedRecipe, err := r.service.UpdateRecipe(uint(id), *recipe)
+	updatedRecipe, err := r.service.Update(uint(id), *recipe)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
@@ -85,7 +87,7 @@ func (r *RecipeController) DeleteRecipe(c *fiber.Ctx) error {
         return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid ID"})
     }
 
-	if err := r.service.DeleteRecipe(uint(id)); err != nil {
+	if err := r.service.Delete(uint(id)); err != nil {
         return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
     }
 
