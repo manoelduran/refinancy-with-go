@@ -5,12 +5,14 @@ import (
 	"gorm.io/gorm"
 )
 type RecipeRepository struct {
-    db *gorm.DB
+	GenericRepository[models.Recipe]
 }
 
 func NewRecipeRepository(db *gorm.DB) *RecipeRepository {
 
-	return &RecipeRepository{db}
+	return &RecipeRepository{
+		GenericRepository: GenericRepository[models.Recipe]{db: db},
+	}
 
 }
 

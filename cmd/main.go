@@ -40,10 +40,9 @@ func main() {
     recipeController := controllers.NewRecipeController(recipeService)
     routes.RecipeRoutes(app, recipeController, validator)
 
-	// userRepository := repositories.NewUserRepository(database.DB)
-	// userService := services.NewUserService(userRepository)
-	// userController := controllers.NewUserController(userService)
-
-	// routes.UserRoutes(app, userController, validator)
+	userRepository := repositories.NewUserRepository(database.DB)
+	userService := services.NewUserService(userRepository)
+	userController := controllers.NewUserController(userService)
+    routes.UserRoutes(app, userController, validator)
     log.Fatal(app.Listen(":3000"))
 }

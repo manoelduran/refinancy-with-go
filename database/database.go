@@ -20,6 +20,7 @@ func InitDatabase() {
     log.Println("Database connection successfully opened")
 
     DB.AutoMigrate(&models.Recipe{})
+    DB.AutoMigrate(&models.User{})
     log.Println("Database migrated")
 }
 

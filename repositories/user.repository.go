@@ -5,13 +5,13 @@ import (
 	"gorm.io/gorm"
 )
 type UserRepository struct {
-    db *gorm.DB
+	GenericRepository[models.User]
 }
 
 func NewUserRepository(db *gorm.DB) *UserRepository {
-
-	return &UserRepository{db}
-
+	return &UserRepository{
+		GenericRepository: GenericRepository[models.User]{db: db},
+	}
 }
 
 func (u *UserRepository) GetUsers() ([]models.User, error) {
