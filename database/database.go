@@ -21,6 +21,7 @@ func InitDatabase() {
 
     DB.AutoMigrate(&models.Recipe{})
     DB.AutoMigrate(&models.User{})
+    DB.AutoMigrate(&models.Expense{})
     log.Println("Database migrated")
 }
 
