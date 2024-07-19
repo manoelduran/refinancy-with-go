@@ -6,44 +6,43 @@ import (
 )
 
 type UserService struct {
-
-	repository *repositories.UserRepository
+	*GenericService[models.User]
 
 }
 
 func NewUserService(repository *repositories.UserRepository) *UserService {
-
-	return &UserService{repository}
-
+	return &UserService{
+        GenericService: NewGenericService(repository),
+    }
 }
 
 func (u *UserService) GetUsers() ([]models.User, error) {
 
-	return u.repository.GetUsers()
+	return u.repository.GetAll()
 
 }
 
 func (u *UserService) GetUser(id uint) (models.User, error) {
 
-	return u.repository.GetUser(id)
+	return u.repository.GetByID(id)
 
 }
 
 func (u *UserService) CreateUser(user models.User) (models.User, error) {
 
-	return u.repository.CreateUser(user)
+	return u.repository.Create(user)
 
 }
 
 
 func (u *UserService) UpdateUser(id uint, recipe models.User) (models.User, error) {
 
-	return u.repository.UpdateUser(id, recipe)
+	return u.repository.Update(id, recipe)
 
 }
 
 func (r *UserService) DeleteUser(id uint) error {
 
-	return r.repository.DeleteUser(id)
+	return r.repository.Delete(id)
 
 }
