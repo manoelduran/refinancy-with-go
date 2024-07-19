@@ -40,6 +40,11 @@ func main() {
     recipeController := controllers.NewRecipeController(recipeService)
     routes.RecipeRoutes(app, recipeController, validator)
 
+    expenseRepository := repositories.NewExpenseRepository(database.DB)
+    expenseService := services.NewExpenseService(expenseRepository)
+    expenseController := controllers.NewExpenseController(expenseService)
+    routes.ExpenseRoutes(app, expenseController, validator)
+    
 	userRepository := repositories.NewUserRepository(database.DB)
 	userService := services.NewUserService(userRepository)
 	userController := controllers.NewUserController(userService)
