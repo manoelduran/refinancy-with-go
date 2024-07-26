@@ -1,66 +1,38 @@
 package repositories
 
 import (
+	"database/sql"
+
 	"github.com/manoelduran/refinancy-with-go/models"
-	"gorm.io/gorm"
 )
+
 type UserRepository struct {
-	GenericRepository[models.User]
+	*GenericRepository[models.User]
 }
 
-func NewUserRepository(db *gorm.DB) *UserRepository {
+func NewUserRepository(db *sql.DB) *UserRepository {
+	fields := []string{"Id", "Name", "Email", "Password"}
 	return &UserRepository{
-		GenericRepository: GenericRepository[models.User]{db: db},
+		GenericRepository: NewGenericRepository[models.User](db, "users", fields),
 	}
 }
 
 func (u *UserRepository) GetUsers() ([]models.User, error) {
-
-	var users []models.User
-	result := u.db.Find(&users)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return users, nil
-
+	return u.GetAll()
 }
 
 func (u *UserRepository) GetUser(id uint) (models.User, error) {
-
-	var user models.User
-	result := u.db.First(&user, id)
-	if result.Error != nil {
-		return models.User{}, result.Error
-	}
-	return user, nil
-
+	return u.GetByID(id)
 }
 
 func (u *UserRepository) CreateUser(user models.User) (models.User, error) {
-
-	result := u.db.Create(&user)
-	if result.Error != nil {
-		return models.User{}, result.Error
-	}
-	return user, nil
-
+	return u.Create(user)
 }
 
 func (u *UserRepository) UpdateUser(id uint, user models.User) (models.User, error) {
-
-	result := u.db.Model(&models.User{}).Where("id = ?", id).Updates(user)
-	if result.Error != nil {
-		return models.User{}, result.Error
-	}
-	return user, nil
-
+	return u.Update(id, user)
 }
+
 func (u *UserRepository) DeleteUser(id uint) error {
-
-	result := u.db.Delete(&models.User{}, id)
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
-
+	return u.Delete(id)
 }

@@ -1,68 +1,38 @@
 package repositories
 
 import (
+	"database/sql"
+
 	"github.com/manoelduran/refinancy-with-go/models"
-	"gorm.io/gorm"
 )
+
 type RecipeRepository struct {
-	GenericRepository[models.Recipe]
+	*GenericRepository[models.Recipe]
 }
 
-func NewRecipeRepository(db *gorm.DB) *RecipeRepository {
-
+func NewRecipeRepository(db *sql.DB) *RecipeRepository {
+	fields := []string{"Id", "Title", "FromBy", "Description", "Value", "ReceivedAt", "ReceivedBy", "CreatedAt", "UpdatedAt"}
 	return &RecipeRepository{
-		GenericRepository: GenericRepository[models.Recipe]{db: db},
+		GenericRepository: NewGenericRepository[models.Recipe](db, "recipes", fields),
 	}
-
 }
 
 func (r *RecipeRepository) GetRecipes() ([]models.Recipe, error) {
-
-	var recipes []models.Recipe
-	result := r.db.Find(&recipes)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return recipes, nil
-
+	return r.GetAll()
 }
 
 func (r *RecipeRepository) GetRecipe(id uint) (models.Recipe, error) {
-
-	var recipe models.Recipe
-	result := r.db.First(&recipe, id)
-	if result.Error != nil {
-		return models.Recipe{}, result.Error
-	}
-	return recipe, nil
-
+	return r.GetByID(id)
 }
 
 func (r *RecipeRepository) CreateRecipe(recipe models.Recipe) (models.Recipe, error) {
-
-	result := r.db.Create(&recipe)
-	if result.Error != nil {
-		return models.Recipe{}, result.Error
-	}
-	return recipe, nil
-
+	return r.Create(recipe)
 }
 
 func (r *RecipeRepository) UpdateRecipe(id uint, recipe models.Recipe) (models.Recipe, error) {
-
-	result := r.db.Model(&models.Recipe{}).Where("id = ?", id).Updates(recipe)
-	if result.Error != nil {
-		return models.Recipe{}, result.Error
-	}
-	return recipe, nil
-
+	return r.Update(id, recipe)
 }
+
 func (r *RecipeRepository) DeleteRecipe(id uint) error {
-
-	result := r.db.Delete(&models.Recipe{}, id)
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
-
+	return r.Delete(id)
 }
