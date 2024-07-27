@@ -27,10 +27,10 @@ func NewGenericRepository[T any](db *sql.DB, tableName string, fields []string) 
 }
 
 func (r *GenericRepository[T]) GetAll() ([]T, error) {
-
-	query := fmt.Sprintf("SELECT %s FROM %s", strings.Join(r.fields, ", "), r.tableName)
+	query := fmt.Sprintf("SELECT * FROM %s", r.tableName)
 	rows, err := r.db.Query(query)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -38,8 +38,15 @@ func (r *GenericRepository[T]) GetAll() ([]T, error) {
 	var items []T
 	for rows.Next() {
 		var item T
-		err := rows.Scan(&item)
+		v := reflect.ValueOf(&item).Elem()
+		dest := make([]interface{}, v.NumField())
+		for i := 0; i < v.NumField(); i++ {
+			dest[i] = v.Field(i).Addr().Interface()
+		}
+
+		err := rows.Scan(dest...)
 		if err != nil {
+			fmt.Println("Error scanning row:", err)
 			return nil, err
 		}
 		items = append(items, item)
@@ -49,15 +56,20 @@ func (r *GenericRepository[T]) GetAll() ([]T, error) {
 }
 
 func (r *GenericRepository[T]) GetByID(id uint) (T, error) {
-	query := fmt.Sprintf("SELECT %s FROM %s WHERE id = ?", strings.Join(r.fields, ", "), r.tableName)
+	query := fmt.Sprintf("SELECT * FROM %s WHERE Id = ?", r.tableName)
 	row := r.db.QueryRow(query, id)
-
 	var item T
-	err := row.Scan(&item)
-	if err != nil {
-		return item, err
-	}
+	v := reflect.ValueOf(&item).Elem()
+		dest := make([]interface{}, v.NumField())
+		for i := 0; i < v.NumField(); i++ {
+			dest[i] = v.Field(i).Addr().Interface()
+		}
 
+		err := row.Scan(dest...)
+		if err != nil {
+			fmt.Println("Error scanning row:", err)
+			return item, err
+		}
 	return item, nil
 }
 
@@ -66,7 +78,6 @@ func (r *GenericRepository[T]) Create(item T) (T, error) {
 	placeholders := make([]string, len(r.fields))
 	values := make([]interface{}, len(r.fields))
 	v := reflect.ValueOf(item)
-	
 	// Ensure item is a struct
 	if v.Kind() != reflect.Struct {
 		return item, fmt.Errorf("item must be a struct")
