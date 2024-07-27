@@ -51,7 +51,6 @@ func (r *GenericRepository[T]) GetAll() ([]T, error) {
 		}
 		items = append(items, item)
 	}
-
 	return items, nil
 }
 
@@ -139,7 +138,7 @@ func (r *GenericRepository[T]) Update(id uint, item T) (T, error) {
 }
 
 func (r *GenericRepository[T]) Delete(id uint) error {
-	query := fmt.Sprintf("DELETE FROM %s WHERE id = ?", r.tableName)
+	query := fmt.Sprintf("DELETE FROM %s WHERE Id = ?", r.tableName)
 	_, err := r.db.Exec(query, id)
 	if err != nil {
 		return err
