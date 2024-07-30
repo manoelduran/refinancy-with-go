@@ -119,21 +119,57 @@ placeholders = append(placeholders, "?", "?")
 }
 
 func (r *GenericRepository[T]) Update(id uint, item T) (T, error) {
-	setClause := make([]string, len(r.fields))
-	values := make([]interface{}, len(r.fields)+1)
+	// Check if the item exists
+	existingItem, err := r.GetByID(id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return existingItem, fmt.Errorf("item with ID %d does not exist", id)
+		}
+		return existingItem, err
+	}
+		// Reflect value of the existing item
+		existingV := reflect.ValueOf(existingItem)
+		existingCreatedAtField := existingV.FieldByName("CreatedAt")
+	// Prepare the SQL update query
+	setClause := make([]string, len(r.fields)+2)
+	values := make([]interface{}, len(r.fields)+2)
 	v := reflect.ValueOf(item)
+	// Ensure item is a struct
+	if v.Kind() != reflect.Struct {
+		return item, fmt.Errorf("item must be a struct")
+	}
+	// Populate setClause and values with the updated fields
 	for i, field := range r.fields {
 		setClause[i] = fmt.Sprintf("%s = ?", field)
-		values[i] = v.FieldByName(field).Interface()
+		fieldValue := v.FieldByName(field)
+		if !fieldValue.IsValid() {
+			return item, fmt.Errorf("invalid field: %s", field)
+		}
+		values[i] = fieldValue.Interface()
 	}
-	values[len(r.fields)] = id
-
-	query := fmt.Sprintf("UPDATE %s SET %s WHERE id = ?", r.tableName, strings.Join(setClause, ", "))
-	_, err := r.db.Exec(query, values...)
+	// Ensure created_at field is preserved in the query
+	setClause[len(r.fields)] = "created_at = ?"
+	values[len(r.fields)] = existingCreatedAtField.Interface()
+	// Add the updated_at field
+	updated_at := time.Now()
+	setClause[len(r.fields)+1] = "updated_at = ?"
+	values[len(r.fields)+1] = updated_at
+	// Create the SQL update query
+	query := fmt.Sprintf("UPDATE %s SET %s WHERE Id = ?", r.tableName, strings.Join(setClause, ", "))
+	// Execute the SQL query
+	_, err = r.db.Exec(query, append(values, id)...)
 	if err != nil {
 		return item, err
 	}
-
+	// Set the created_at and updated_at fields in the returned item
+	createdAtField := v.FieldByName("CreatedAt")
+	if createdAtField.IsValid() && createdAtField.CanSet() && existingCreatedAtField.IsValid() {
+		createdAtField.Set(existingCreatedAtField)
+	}
+	updatedAtField := v.FieldByName("UpdatedAt")
+	if updatedAtField.IsValid() && updatedAtField.CanSet() {
+		updatedAtField.Set(reflect.ValueOf(updated_at))
+	}
 	return item, nil
 }
 

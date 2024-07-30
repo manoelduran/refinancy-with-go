@@ -11,7 +11,7 @@ type UserRepository struct {
 }
 
 func NewUserRepository(db *sql.DB) *UserRepository {
-	fields := []string{"Id", "Name", "Email", "Password"}
+	fields := []string{"Name", "Email", "Password"}
 	return &UserRepository{
 		GenericRepository: NewGenericRepository[models.User](db, "users", fields),
 	}
