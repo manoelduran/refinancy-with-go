@@ -44,7 +44,6 @@ func main() {
     expenseService := services.NewExpenseService(expenseRepository)
     expenseController := controllers.NewExpenseController(expenseService)
     routes.ExpenseRoutes(app, expenseController, validator)
-    
 	userRepository := repositories.NewUserRepository(database.DB)
 	userService := services.NewUserService(userRepository)
 	userController := controllers.NewUserController(userService)

@@ -10,7 +10,7 @@ type ExpenseRepository struct {
 }
 
 func NewExpenseRepository(db *sql.DB) *ExpenseRepository {
-	fields := []string{"Id", "Title", "FromBy", "Description", "Value", "PaidAt", "ReceivedBy"}
+	fields := []string{"Title", "From_By", "Description", "Value", "Received_By"}
 	return &ExpenseRepository{
 		GenericRepository: NewGenericRepository[models.Expense](db, "expenses", fields),
 	}
