@@ -81,7 +81,6 @@ func (r *GenericRepository[T]) Create(item T) (T, error) {
 	if v.Kind() != reflect.Struct {
 		return item, fmt.Errorf("item must be a struct")
 	}
-
 	for i, field := range r.fields {
 		fieldValue := v.FieldByName(field)
 		if !fieldValue.IsValid() {
@@ -104,17 +103,15 @@ placeholders = append(placeholders, "?", "?")
 	if err != nil {
 		return item, err
 	}
-
 	// Retrieve the last inserted ID if needed
 	lastID, err := result.LastInsertId()
 	if err == nil {
 		// Find and set the ID field if it exists
-		idField := v.FieldByName("Id")
+		idField := v.FieldByName("id")
 		if idField.IsValid() && idField.CanSet() {
 			idField.Set(reflect.ValueOf(uint(lastID)))
 		}
 	}
-
 	return item, nil
 }
 
