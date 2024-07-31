@@ -52,6 +52,17 @@ func createTables() {
 			created_at DATETIME,
 			updated_at DATETIME
 		);`,
+		`CREATE TABLE IF NOT EXISTS cashflows (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			title TEXT NOT NULL,
+			user_id INTEGER NOT NULL,
+			description TEXT NOT NULL,
+			earnings INTEGER NOT NULL,
+			costs INTEGER NOT NULL,
+			total INTEGER NOT NULL,
+			created_at DATETIME,
+			updated_at DATETIME
+		);`,
 	}
 
 	for _, query := range queries {
