@@ -38,7 +38,6 @@ func createTables() {
 			from_by INTEGER NOT NULL,
 			description TEXT NOT NULL,
 			value INTEGER NOT NULL,
-			received_at DATETIME,
 			received_by INTEGER NOT NULL,
 			created_at DATETIME,
 			updated_at DATETIME
@@ -49,7 +48,6 @@ func createTables() {
 			from_by INTEGER NOT NULL,
 			description TEXT NOT NULL,
 			value INTEGER NOT NULL,
-			paid_at DATETIME,
 			received_by INTEGER NOT NULL,
 			created_at DATETIME,
 			updated_at DATETIME

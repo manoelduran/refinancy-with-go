@@ -11,7 +11,8 @@ type RecipeRepository struct {
 }
 
 func NewRecipeRepository(db *sql.DB) *RecipeRepository {
-	fields := []string{"Id", "Title", "FromBy", "Description", "Value", "ReceivedAt", "ReceivedBy", "CreatedAt", "UpdatedAt"}
+	fields := []string{"Title", "From_By", "Description", "Value", "Received_By"}
+
 	return &RecipeRepository{
 		GenericRepository: NewGenericRepository[models.Recipe](db, "recipes", fields),
 	}
